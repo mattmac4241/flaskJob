@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   </head>
   <body>
-
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
@@ -28,6 +27,7 @@
           <ul class="nav navbar-nav">
             {% if not session.logged_in %}
               <li><a href="{{ url_for('users.register') }}">Signup</a></li>
+              <li><a href="{{url_for('users.login')}}">Login</a></li>
             {% else %}
               <li><a href="{{ url_for('users.logout') }}">Signout</a></li>
             {% endif %}

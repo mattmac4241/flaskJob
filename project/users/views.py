@@ -1,6 +1,5 @@
 from functools import wraps
-from flask import flash, redirect, render_template, \
-    request, session, url_for, Blueprint
+from flask import flash, redirect, render_template,request, session, url_for, Blueprint
 from sqlalchemy.exc import IntegrityError
 
 from .forms import RegisterForm, LoginForm
@@ -20,8 +19,15 @@ def login_required(test):
             return redirect(url_for('users.login'))
     return wrap
 
+@users_blueprint.route('/')
+def index():
+    if 'logged_in' in session:
+        name = session['name']
+        return render_template('index.html',name=name)
+    return render_template('index.html')
+
 #routes
-@users_blueprint.route('/', methods=['GET', 'POST'])
+@users_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     form = LoginForm(request.form)
@@ -29,14 +35,14 @@ def login():
         if form.validate_on_submit():
             #check to make sure this has no issues
             user = User.query.filter_by(email=request.form['email']).first()
-            if user is not None and bcrypt.check_password_hash(
-                    user.password, request.form['password']):
+            if user is not None and bcrypt.check_password_hash(user.password, request.form['password']):
                 session['logged_in'] = True
                 session['user_id'] = user.id
                 session['role'] = user.role
                 session['name'] = user.name
                 flash("Welcome!")
-                return render_template('test.html')
+                flash("Succesfful Logged in")
+                return redirect(url_for('users.index')) #when profiles are designed change to profiles
             else:
                 error = 'Invalid username or password.'
     return render_template('login.html',form=form,error=error)
@@ -51,23 +57,22 @@ def logout():
     flash("Goodbye!")
     return redirect(url_for('users.login'))
 
-@users_blueprint.route('/register',methods=['GET','POST'])
+@users_blueprint.route('/register/',methods=['GET','POST'])
 def register():
     error = None
     form = RegisterForm(request.form)
     if request.method == 'POST':
         if form.validate_on_submit():
             new_user = User(
-                Name=form.first_name.data + ' ' + form.last_name.data,
+                name=form.first_name.data + ' ' + form.last_name.data,
                 email=form.email.data,
-                role = form.role.data,
                 password=bcrypt.generate_password_hash(form.password.data)
             )
             try:
                 db.session.add(new_user)
                 db.session.commit()
                 flash("Thanks for registering")
-                return redirect(url_for('users.login'))
+                return redirect(url_for('users.index'))
             except IntegrityError:
                 error = "That username and/or email alread exists."
                 return render_template('register.html',form=form,error=error)

@@ -6,11 +6,11 @@ from wtforms.validators import DataRequired,Length,EqualTo,Email
 class RegisterForm(Form):
     first_name = StringField(
         'First Name',
-        validators=[DataRequired(),Length(min=6,max=50)]
+        validators=[DataRequired(),Length(min=1,max=50)]
     )
     last_name = StringField(
         'Last Name',
-        validators=[DataRequired(),Length(min=6,max=50)]
+        validators=[DataRequired(),Length(min=1,max=50)]
     )
     email = StringField(
         'Email',

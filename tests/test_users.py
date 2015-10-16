@@ -55,5 +55,11 @@ class UsersTest(unittest.TestCase):
             t.name
         assert t.name == "Matt McCabe"
 
+    '''def test_form_is_present_on_login_page(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code,200)
+        self.assertIn(b'Plea)'''
+
+
 if __name__ == "__main__":
     unittest.main()
