@@ -7,34 +7,29 @@ from project.models import User
 
 TEST_DB = 'test.db'
 
-
-class APITests(unittest.TestCase):
+class UsersTest(unittest.TestCase):
     # executed prior to each test
     def setUp(self):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['DEBUG'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///' + \
-            os.path.join(basedir, TEST_DB)
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////' + os.path.join(basedir, TEST_DB)
         self.app = app.test_client()
         db.create_all()
-
         self.assertEquals(app.debug, False)
-
     # executed after each test
     def tearDown(self):
         db.session.remove()
         db.drop_all()
 
-
-    def login(self, name, password):
+    def login(self, email, password):
         return self.app.post('/', data=dict(
-            name=name, password=password), follow_redirects=True)
+            email=emil, password=password), follow_redirects=True)
 
-    def register(self, name, email, password, confirm):
+    def register(self, first_name,last_name, email, password, confirm):
         return self.app.post(
             'register/',
-            data=dict(name=name, email=email, password=password, confirm=confirm),
+            data=dict(first_name=first_name,last_name=last_name,email=email, password=password, confirm=confirm),
             follow_redirects=True
         )
 
@@ -42,23 +37,23 @@ class APITests(unittest.TestCase):
         return self.app.get('logout/', follow_redirects=True)
 
     #create a job seeker account
-    def create_seeker_user(self,name,email,password):
+    def create_user(self,name,email,password):
         new_user = User(
             name=name,
             email=email,
             password=bcrypt.generate_password_hash(password),
-            role = "seeker"
         )
         db.session.add(new_user)
         db.session.commit()
 
-    #create a company account
-    def create_company_user(self, name, email, password):
-        new_user = User(
-            name=name,
-            email=email,
-            password=bcrypt.generate_password_hash(password),
-            role = "company"
-        )
+    def test_users_can_register(self):
+        new_user = User("Matt McCabe","mattmac4241@gmail.com","home2222")
         db.session.add(new_user)
         db.session.commit()
+        test = db.session.query(User).all()
+        for t in test:
+            t.name
+        assert t.name == "Matt McCabe"
+
+if __name__ == "__main__":
+    unittest.main()
