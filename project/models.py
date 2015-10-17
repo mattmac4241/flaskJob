@@ -24,12 +24,17 @@ class Company(db.Model):
 
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String,nullable=False)
+    info = db.Column(db.String) #used for brief info about company
+    field = db.Column(db.String) #company field type such as web or medical
+    website = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self,name=None,user_id=None):
+    def __init__(self,name=None,info=None,info=None,field=None,website=None):
         self.name = name
-        self.user_id = user_id
-
+        self.info = info
+        self.field = field
+        self.website = website
+        
     def __repr__(self):
         return '<Comapny {0}>'.format(self.name)
 
