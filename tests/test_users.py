@@ -23,8 +23,8 @@ class UsersTest(unittest.TestCase):
         db.drop_all()
 
     def login(self, email, password):
-        return self.app.post('/', data=dict(
-            email=emil, password=password), follow_redirects=True)
+        return self.app.post('/login', data=dict(
+            email=email, password=password), follow_redirects=True)
 
     def register(self, first_name,last_name, email, password, confirm):
         return self.app.post(
@@ -55,10 +55,78 @@ class UsersTest(unittest.TestCase):
             t.name
         assert t.name == "Matt McCabe"
 
-    '''def test_form_is_present_on_login_page(self):
-        response = self.app.get('/')
+    def test_form_is_present_on_login_page(self):
+        response = self.app.get('/login')
         self.assertEqual(response.status_code,200)
-        self.assertIn(b'Plea)'''
+        self.assertIn(b'Please sign in to access your task list',response.data)
+
+    def test_form_is_present_on_register_page(self):
+        response = self.app.get('/register/')
+        self.assertEqual(response.status_code,200)
+        self.assertIn(b'Please register to access the task list',response.data)
+
+    def test_user_can_login(self):
+        self.register("Matthew",'McCabe','mattmac4241@yahoo.com','testpassword','testpassword')
+        response = self.login('mattmac4241@yahoo.com','testpassword')
+        self.assertIn('Matthew McCabe',response.data)
+
+    def test_users_cannot_login_unless_registered(self):
+        response = self.login('foo', 'bar')
+        self.assertIn(b'Invalid username or password.', response.data)
+
+    def test_invalid_form_data(self):
+        self.register("Matthew","McCabe","test@mail.com",'python','python')
+        response = self.login('alert("alert box");','foo')
+        self.assertIn(b'Invalid username or password.',response.data)
+
+    def test_login_with_incorrect_password(self):
+        self.register("Matthew","McCabe","test@mail.com",'python','python')
+        response = self.login('test@gmail','sdfsdfs')
+        self.assertIn(b'Invalid username or password.',response.data)
+
+    def test_login_with_incorrect_email(self):
+        self.register("Matthew","McCabe","test@mail.com",'python','python')
+        response = self.login('fake@mail.com','python')
+        self.assertIn(b'Invalid username or password.',response.data)
+
+    def test_register_user_already_registered(self):
+        self.app.get('register/',follow_redirects=True)
+        self.register("Matthew","McCabe","test@mail.com",'python','python')
+        self.app.get('register/',follow_redirects=True)
+        response = self.register("Matthew","McCabe","test@mail.com",'python','python')
+        self.assertIn(
+            b'That username and/or email alread exists',
+            response.data
+        )
+    def test_register_user_with_no_email(self):
+        self.app.get('register/',follow_redirects=True)
+        response = self.register("Matthew","McCabe",'','python','python')
+        self.assertIn('This field is required.',response.data)
+
+    def test_register_user_with_no_first_name(self):
+        self.app.get('register/',follow_redirects=True)
+        response = self.register("","McCabe",'test@email.com','python','python')
+        self.assertIn('This field is required.',response.data)
+
+    def test_register_user_with_no_last_name(self):
+        self.app.get('register/',follow_redirects=True)
+        response = self.register("Matthew","",'test@email.com','python','python')
+        self.assertIn('This field is required.',response.data)
+
+    def test_register_with_no_password(self):
+        self.app.get('register/',follow_redirects=True)
+        response = self.register("Matthew","McCabe",'test@email.com','','python')
+        self.assertIn('This field is required.',response.data)
+
+    def test_register_with_no_confirm_password(self):
+        self.app.get('register/',follow_redirects=True)
+        response = self.register("Matthew","McCabe",'test@email.com','python','')
+        self.assertIn('This field is required.',response.data)
+
+    def test_register_with_no_confirm_password(self):
+        self.app.get('register/',follow_redirects=True)
+        response = self.register("Matthew","McCabe",'test@email.com','python','pthonds')
+        self.assertIn('Field must be equal to password.',response.data)
 
 
 if __name__ == "__main__":
