@@ -48,7 +48,6 @@
         {% for message in get_flashed_messages() %}
           <div class="alert alert-success">{{ message }}</div>
         {% endfor %}
-
         {% if error %}
           <div class="error"><strong>Error:</strong> {{ error }}</div>
         {% endif %}
