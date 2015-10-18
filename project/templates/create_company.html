@@ -1,0 +1,43 @@
+{% extends "_base.html" %}
+{% block content %}
+
+<h1>Welcome to Steve.</h1>
+<h3>Create Your Company Profile.</h3>
+<form method="POST" action="/create_company/">
+  {{ form.csrf_token }}
+  <p>
+    {{ form.name(placeholder="Company Name") }}
+    {% if form.name.errors %}
+      <span class="error">
+        {% for error in form.name.errors %}
+          {{ error }}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+  <p>
+    {{ form.info(placeholder="Company Description") }}
+    {% if form.info.errors %}
+      <span class="error">
+        {% for error in form.info.errors %}
+          {{ error }}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+  <p>
+    {{ form.website(placeholder="website") }}
+    {% if form.website.errors %}
+      <span class="error">
+        {% for error in form.website.errors %}
+          {{ error }}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+  </p>
+  <button class="btn btn-sm btn-success" type="submit">Create Company</button>
+  <br>
+</form>
+
+{% endblock %}

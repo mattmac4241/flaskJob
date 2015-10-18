@@ -1,5 +1,13 @@
 from project import db
 import datetime
+from sqlalchemy.orm import relationship
+
+
+association_table = db.Table('association_table',
+    db.Column('jobs_id', db.Integer, db.ForeignKey('jobs.id')),
+    db.Column('users_id', db.Integer, db.ForeignKey('users.id'))
+)
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -9,7 +17,8 @@ class User(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     role = db.Column(db.String,default="user")
-
+    #applied_to = db.relationship('Job') #Jobs the user applied_to
+    applied_to = db.relationship('Job',secondary=association_table,backref=db.backref('jobs', lazy='dynamic'))
     def __init__(self, name=None, email=None, password=None, role=None):
         self.name = name
         self.email = email
@@ -24,17 +33,17 @@ class Company(db.Model):
 
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String,nullable=False)
-    info = db.Column(db.String) #used for brief info about company
-    field = db.Column(db.String) #company field type such as web or medical
-    website = db.Column(db.String)
+    info = db.Column(db.String,default='') #used for brief info about company
+    website = db.Column(db.String,default='')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self,name=None,info=None,info=None,field=None,website=None):
+
+    def __init__(self,name=None,info=None,website=None,user_id=None):
         self.name = name
         self.info = info
-        self.field = field
         self.website = website
-        
+        self.user_id = user_id
+
     def __repr__(self):
         return '<Comapny {0}>'.format(self.name)
 
@@ -43,13 +52,14 @@ class Job(db.Model):
     __tablename__ = 'jobs'
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String,nullable=False)
-    description = db.Column(db.String)
+    description = db.Column(db.String,default='')
     salary = db.Column(db.Integer)
     zip_code = db.Column(db.Integer)
-    job_type = db.Column(db.String) #reprsents Fulltime,partime,contract,internship,commission
+    job_type = db.Column(db.String,default='') #reprsents Fulltime,partime,contract,internship,commission
     company_id = db.Column(db.Integer,db.ForeignKey('companies.id'))
+    #applied_to = db.relationship('User') #Jobs the user applied_to
 
-    def __init__(self,name=None,description=None,salary=None,zip_code=None,job_type,company_id=None):
+    def __init__(self,name=None,description=None,salary=None,zip_code=None,job_type=None,company_id=None):
         self.name = name
         self.description = description
         self.salary = salary

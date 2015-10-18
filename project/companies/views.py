@@ -6,7 +6,7 @@ from .forms import CreateCompanyForm
 from project import db, bcrypt
 from project.models import Company
 
-users_blueprint = Blueprint('companies', __name__)
+companies_blueprint = Blueprint('companies', __name__)
 
 #Helper functions
 def login_required(test):
@@ -19,21 +19,27 @@ def login_required(test):
             return redirect(url_for('users.login'))
     return wrap
 
-@users_blueprint.route('/create_company/',methods=['GET','POST'])
+@companies_blueprint.route('/create_company/',methods=['GET','POST'])
+@login_required
 def create_company():
     error = None
     form = CreateCompanyForm(request.form)
     if request.method == 'POST':
         if form.validate_on_submit():
-            new_company = Comapny(
+            new_company = Company(
                 name = form.name.data,
                 info = form.info.data,
-                field = form.field.data,
-                website = form.website.data
+                website = form.website.data,
+                user_id = session['user_id']
             )
-            try:
-                db.session.add(new_company)
-                db.session.commit()
-                flash("Thanks for registering your company")
-                return redirect(url_for('companies.profile'))
+            db.session.add(new_company)
+            db.session.commit()
+            flash("Thanks for registering your company")
+            return redirect(url_for('companies.company_profile',company_id=new_company.id))
     return render_template('create_company.html',form=form)
+
+@companies_blueprint.route('/company/<int:company_id>')
+@login_required
+def company_profile(company_id):
+    company = Company.query.get(company_id)
+    return render_template('company.html',company=company)
