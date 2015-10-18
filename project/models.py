@@ -58,6 +58,7 @@ class Job(db.Model):
     zip_code = db.Column(db.String)
     job_type = db.Column(db.String,default='') #reprsents Fulltime,partime,contract,internship,commission
     company_id = db.Column(db.Integer,db.ForeignKey('companies.id'))
+    applicants = db.relationship('User',secondary=association_table,backref=db.backref('users', lazy='dynamic'))
 
     def __init__(self,title=None,description=None,salary=None,zip_code=None,job_type=None,company_id=None):
         self.title = title

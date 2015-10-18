@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 
 from .forms import CreateJobForm
 from project import db
-from project.models import Job,Company
+from project.models import Job,Company,User
 
 jobs_blueprint = Blueprint('jobs', __name__)
 
@@ -52,13 +52,13 @@ def jobs_profile(jobs_id,company_id):
     job = Job.query.get(jobs_id)
     return render_template('job.html',job=job)
 
-@jobs_blueprint.route('/apply_to/<int:jobs_id>')
+@jobs_blueprint.route('/apply_to/<int:jobs_id>/')
 @login_required
 def apply_to_job(jobs_id):
-    job = Jobs.query.get(jobs_id)
+    job = Job.query.get(jobs_id)
     user = User.query.get(session['user_id'])
     user.applied_to.append(job)
-    job.applied_to.append(user)
+    job.applicants.append(user)
     db.session.commit()
     flash('You successfully applied to the job. Good Luck!')
-    return redirect(url_for('jobs.profile',jobs_id=jobs_id,company_id=jobs.company_id))
+    return redirect(url_for('jobs.jobs_profile',jobs_id=jobs_id,company_id=job.company_id))

@@ -76,6 +76,11 @@ class ComapnyTest(unittest.TestCase):
         db.session.add(new_job)
         db.session.commit()
 
+    def apply_to_job(self,job,user):
+        user.applied_to.append(job)
+        job.applicants.append(user)
+        db.session.commit()
+
     def post_job(self,title,description,salary,zip_code,job_type,company_id):
         url = '/company/%s/create_job/' % company_id
         return self.app.post(
@@ -93,6 +98,21 @@ class ComapnyTest(unittest.TestCase):
             t.title
         assert t.title == "miner"
 
+    def test_apply_to_job(self):
+        self.create_user("Matthew McCabe","test@mail.com",'python')
+        self.create_company("weyland",'mines','www.test.com',1)
+        self.create_job("miner",'you will work the mines','50,000',60453,'',1)
+        self.create_user("Matthew McCabe","test2@mail.com",'python')
+        job = Job.query.get(1)
+        user = User.query.get(2)
+        self.apply_to_job(job,user)
+        for j in user.applied_to:
+            j.title
+        assert(j.title == job.title)
+        for u in job.applicants:
+            u.name
+        assert(user.name == u.name)
+
     def test_successfully_post_job(self):
         self.register('Matt','McCabe','test@mail.com','python','python')
         self.login('test@mail.com','python')
@@ -108,5 +128,16 @@ class ComapnyTest(unittest.TestCase):
         self.register('Fake','Name','test2@mail.com','python','python')
         self.login('test2@mail.com','python')
         response = self.app.get('/company/1/create_job/',follow_redirects=True)
-        print response.data
         self.assertEqual(response.status_code,403)
+
+    def test_successfully_apply_to_job(self):
+        self.register('Matt','McCabe','test@mail.com','python','python')
+        self.login('test@mail.com','python')
+        self.register_company('weyland','mining company','wwww.weyland.com')
+        self.post_job('miner','you will work the mines',50000,60453,'Fulle-Time',1)
+        self.logout()
+        self.register('Fake','Name','test2@mail.com','python','python')
+        self.login('test2@mail.com','python')
+        self.app.get('/company/1/jobs/1',follow_redirects=True)
+        response = self.app.get('/apply_to/1/',follow_redirects=True)
+        self.assertIn('You successfully applied to the job. Good Luck!',response.data)
