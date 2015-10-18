@@ -19,6 +19,7 @@ def login_required(test):
             flash('You need to login first.')
             return redirect(url_for('users.login'))
     return wrap
+
 @jobs_blueprint.route('/company/<int:company_id>/create_job/',methods=['GET','POST'])
 @login_required
 def create_job(company_id):
@@ -37,7 +38,7 @@ def create_job(company_id):
                 salary = form.salary.data,
                 zip_code = form.zip_code.data,
                 job_type = form.job_type.data,
-                user_id = session['user_id']
+                company_id = company.id
             )
             db.session.add(new_job)
             db.session.commit()
@@ -48,7 +49,7 @@ def create_job(company_id):
 @jobs_blueprint.route('/company/<int:company_id>/jobs/<int:jobs_id>')
 @login_required
 def jobs_profile(jobs_id,company_id):
-    job = Jobs.query.get(jobs_id)
+    job = Job.query.get(jobs_id)
     return render_template('job.html',job=job)
 
 @jobs_blueprint.route('/apply_to/<int:jobs_id>')

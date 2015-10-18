@@ -97,7 +97,7 @@ class ComapnyTest(unittest.TestCase):
         self.register('Matt','McCabe','test@mail.com','python','python')
         self.login('test@mail.com','python')
         self.register_company('weyland','mining company','wwww.weyland.com')
-        response = self.post_job('miner','you will work the mines',50000,60453,'',1)
+        response = self.post_job('miner','you will work the mines',50000,60453,'Fulle-Time',1)
         self.assertIn('Thanks for posting a job',response.data)
 
     def test_fail_job_post_because_not_owner(self):
