@@ -2,8 +2,8 @@
 {% block content %}
 
 <h1>Welcome to Steve.</h1>
-<h3>Create Your Company Profile.</h3>
-<form method="POST" action="/create_company/">
+<h3>Post Your Job</h3>
+<form method="POST" action="/company/{{company_id}}/create_job/">
   {{ form.csrf_token }}
   <p>
     {{ form.title(placeholder="Job Title") }}
@@ -56,7 +56,7 @@
     {% endif %}
   </p>
   </p>
-  <button class="btn btn-sm btn-success" type="submit">Create Company</button>
+  <button class="btn btn-sm btn-success" type="submit">Create Job</button>
   <br>
 </form>
 

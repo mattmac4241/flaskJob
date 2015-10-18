@@ -7,6 +7,10 @@ association_table = db.Table('association_table',
     db.Column('jobs_id', db.Integer, db.ForeignKey('jobs.id')),
     db.Column('users_id', db.Integer, db.ForeignKey('users.id'))
 )
+company_table = db.Table('company_table',
+    db.Column('jobs_id', db.Integer, db.ForeignKey('jobs.id')),
+    db.Column('company_id', db.Integer, db.ForeignKey('companies.id'))
+)
 
 
 class User(db.Model):
@@ -36,7 +40,7 @@ class Company(db.Model):
     info = db.Column(db.String,default='') #used for brief info about company
     website = db.Column(db.String,default='')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
+    jobs_posted = db.relationship('Job',secondary=company_table)
 
     def __init__(self,name=None,info=None,website=None,user_id=None):
         self.name = name

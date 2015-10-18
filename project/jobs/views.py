@@ -40,11 +40,12 @@ def create_job(company_id):
                 job_type = form.job_type.data,
                 company_id = company.id
             )
+            company.jobs_posted.append(new_job)
             db.session.add(new_job)
             db.session.commit()
             flash("Thanks for posting a job")
             return redirect(url_for('jobs.jobs_profile',company_id=company.id,jobs_id=new_job.id))
-    return render_template('create_job.html',form=form)
+    return render_template('create_job.html',form=form,company_id=company_id)
 
 @jobs_blueprint.route('/company/<int:company_id>/jobs/<int:jobs_id>')
 @login_required
@@ -54,11 +55,16 @@ def jobs_profile(jobs_id,company_id):
 
 @jobs_blueprint.route('/apply_to/<int:jobs_id>/')
 @login_required
-def apply_to_job(jobs_id):
+def apply_to_job(jobs_id,company_id):
     job = Job.query.get(jobs_id)
     user = User.query.get(session['user_id'])
-    user.applied_to.append(job)
-    job.applicants.append(user)
-    db.session.commit()
-    flash('You successfully applied to the job. Good Luck!')
+    if job in user.applied_to:
+        flash("You have already applied to this job")
+    elif company.id == job.company_id:
+        flash("You can't apply to jobs you post")
+    else:
+        user.applied_to.append(job)
+        job.applicants.append(user)
+        db.session.commit()
+        flash('You successfully applied to the job. Good Luck!')
     return redirect(url_for('jobs.jobs_profile',jobs_id=jobs_id,company_id=job.company_id))

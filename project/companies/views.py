@@ -18,6 +18,10 @@ def login_required(test):
             return redirect(url_for('users.login'))
     return wrap
 
+def get_jobs(company_id):
+    return
+
+
 @companies_blueprint.route('/create_company/',methods=['GET','POST'])
 @login_required
 def create_company():
@@ -41,4 +45,6 @@ def create_company():
 @login_required
 def company_profile(company_id):
     company = Company.query.get(company_id)
+    for job in company.jobs_posted:
+        print job.title
     return render_template('company.html',company=company)

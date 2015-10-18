@@ -30,6 +30,7 @@
               <li><a href="{{url_for('users.login')}}">Login</a></li>
             {% else %}
               <li><a href="{{ url_for('users.logout') }}">Signout</a></li>
+              <li><a href="{{url_for('companies.create_company')}}">Create Company Profile</a></li>
             {% endif %}
           </ul>
           {% if session.logged_in %}

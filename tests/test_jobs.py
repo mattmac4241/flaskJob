@@ -141,3 +141,17 @@ class ComapnyTest(unittest.TestCase):
         self.app.get('/company/1/jobs/1',follow_redirects=True)
         response = self.app.get('/apply_to/1/',follow_redirects=True)
         self.assertIn('You successfully applied to the job. Good Luck!',response.data)
+
+    def test_prevent_applying_to_job_twice(self):
+        self.register('Matt','McCabe','test@mail.com','python','python')
+        self.login('test@mail.com','python')
+        self.register_company('weyland','mining company','wwww.weyland.com')
+        self.post_job('miner','you will work the mines',50000,60453,'Fulle-Time',1)
+        self.logout()
+        self.register('Fake','Name','test2@mail.com','python','python')
+        self.login('test2@mail.com','python')
+        self.app.get('/company/1/jobs/1',follow_redirects=True)
+        self.app.get('/apply_to/1/',follow_redirects=True)
+        self.app.get('/company/1/jobs/1',follow_redirects=True)
+        response = self.app.get('/apply_to/1/',follow_redirects=True)
+        self.assertIn('You have already applied to this job',response.data)
