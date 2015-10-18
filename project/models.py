@@ -50,19 +50,22 @@ class Company(db.Model):
 
 class Job(db.Model):
     __tablename__ = 'jobs'
+
     id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String,nullable=False)
+    title = db.Column(db.String,nullable=False)
     description = db.Column(db.String,default='')
     salary = db.Column(db.Integer)
-    zip_code = db.Column(db.Integer)
+    zip_code = db.Column(db.String)
     job_type = db.Column(db.String,default='') #reprsents Fulltime,partime,contract,internship,commission
     company_id = db.Column(db.Integer,db.ForeignKey('companies.id'))
-    #applied_to = db.relationship('User') #Jobs the user applied_to
 
-    def __init__(self,name=None,description=None,salary=None,zip_code=None,job_type=None,company_id=None):
-        self.name = name
+    def __init__(self,title=None,description=None,salary=None,zip_code=None,job_type=None,company_id=None):
+        self.title = title
         self.description = description
         self.salary = salary
         self.zip_code = zip_code
         self.job_type = job_type
         self.company_id = company_id
+
+    def __repr__(self):
+        return '<Job {0}>'.format(self.title)

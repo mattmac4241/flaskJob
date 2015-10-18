@@ -11,6 +11,8 @@ db = SQLAlchemy(app)
 
 from project.users.views import users_blueprint
 from project.companies.views import companies_blueprint
+from project.jobs.views import jobs_blueprint
 
 app.register_blueprint(users_blueprint)
 app.register_blueprint(companies_blueprint)
+app.register_blueprint(jobs_blueprint)

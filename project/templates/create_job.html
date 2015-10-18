@@ -1,0 +1,63 @@
+{% extends "_base.html" %}
+{% block content %}
+
+<h1>Welcome to Steve.</h1>
+<h3>Create Your Company Profile.</h3>
+<form method="POST" action="/create_company/">
+  {{ form.csrf_token }}
+  <p>
+    {{ form.title(placeholder="Job Title") }}
+    {% if form.title.errors %}
+      <span class="error">
+        {% for error in form.title.errors %}
+          {{ error }}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+  <p>
+    {{ form.description(placeholder="Job Description") }}
+    {% if form.description.errors %}
+      <span class="error">
+        {% for error in form.description.errors %}
+          {{ error }}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+  <p>
+    {{ form.salary(placeholder="Starting Salary") }}
+    {% if form.salary.errors %}
+      <span class="error">
+        {% for error in form.salary.errors %}
+          {{ error }}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+  <p>
+    {{ form.zip_code(placeholder="ZipCode Location") }}
+    {% if form.zip_code.errors %}
+      <span class="error">
+        {% for error in form.zip_code.errors %}
+          {{ error }}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+  <p>
+    {{ form.job_type(placeholder="Job Type") }}
+    {% if form.job_type.errors %}
+      <span class="error">
+        {% for error in form.job_type.errors %}
+          {{ error }}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+  </p>
+  <button class="btn btn-sm btn-success" type="submit">Create Company</button>
+  <br>
+</form>
+
+{% endblock %}

@@ -1,19 +1,15 @@
-from functools import wraps,update_wrapper
+from functools import wraps
 
 from flask import flash, redirect, render_template,request, session, url_for, Blueprint,abort
 from sqlalchemy.exc import IntegrityError
 
 from .forms import CreateJobForm
-from project import db, bcrypt
-from project.models import Jobs
+from project import db
+from project.models import Job,Company
 
 jobs_blueprint = Blueprint('jobs', __name__)
 
 #Helper functions
-@app.errorhandler(403)
-def not_found(error):
-    return render_template('403.html'), 403
-
 def login_required(test):
     @wraps(test)
     def wrap(*args, **kwargs):
@@ -22,20 +18,21 @@ def login_required(test):
         else:
             flash('You need to login first.')
             return redirect(url_for('users.login'))
-
+    return wrap
 @jobs_blueprint.route('/company/<int:company_id>/create_job/',methods=['GET','POST'])
 @login_required
 def create_job(company_id):
+    print "here"
     error = None
     form = CreateJobForm(request.form)
-    user = sesssion['user_id']
+    user = session['user_id']
     company = Company.query.get(company_id)
-    if company.user_id != user.id:
+    if company.user_id != user:
         abort(403)
     elif request.method == 'POST':
         if form.validate_on_submit():
             new_job = Job(
-                name = form.name.data,
+                title = form.title.data,
                 description = form.description.data,
                 salary = form.salary.data,
                 zip_code = form.zip_code.data,
@@ -46,7 +43,7 @@ def create_job(company_id):
             db.session.commit()
             flash("Thanks for posting a job")
             return redirect(url_for('jobs.jobs_profile',company_id=company.id,jobs_id=new_job.id))
-    return render_template('create_company.html',form=form)
+    return render_template('create_job.html',form=form)
 
 @jobs_blueprint.route('/company/<int:company_id>/jobs/<int:jobs_id>')
 @login_required

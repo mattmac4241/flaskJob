@@ -64,9 +64,9 @@ class ComapnyTest(unittest.TestCase):
         db.session.add(new_company)
         db.session.commit()
 
-    def create_job(self,name,description,salary,zip_code,job_type,company_id):
+    def create_job(self,title,description,salary,zip_code,job_type,company_id):
         new_job = Job(
-            name = name,
+            title = title,
             description = description,
             salary = salary,
             zip_code = zip_code,
@@ -76,11 +76,12 @@ class ComapnyTest(unittest.TestCase):
         db.session.add(new_job)
         db.session.commit()
 
-    def post_job(self,name,description,salary,zip_code,job_type):
+    def post_job(self,title,description,salary,zip_code,job_type,company_id):
+        url = '/company/%s/create_job/' % company_id
         return self.app.post(
-            '/create_company/',
-            data=dict(name=name,info=info,website=website),
-            follow_redirects=True
+            url,
+            data=dict(title=title,description=description,salary=salary,
+            zip_code=zip_code,job_type=job_type),follow_redirects=True
         )
 
     def test_job_creation(self):
@@ -89,14 +90,14 @@ class ComapnyTest(unittest.TestCase):
         self.create_job("miner",'you will work the mines','50,000',60453,'',1)
         test = db.session.query(Job).all()
         for t in test:
-            t.name
-        assert t.name == "miner"
+            t.title
+        assert t.title == "miner"
 
     def test_successfully_post_job(self):
         self.register('Matt','McCabe','test@mail.com','python','python')
         self.login('test@mail.com','python')
         self.register_company('weyland','mining company','wwww.weyland.com')
-        response = self.app.get(url_for('/company/1/create_job'),follow_redirects=True)
+        response = self.post_job('miner','you will work the mines',50000,60453,'',1)
         self.assertIn('Thanks for posting a job',response.data)
 
     def test_fail_job_post_because_not_owner(self):
@@ -107,4 +108,5 @@ class ComapnyTest(unittest.TestCase):
         self.register('Fake','Name','test2@mail.com','python','python')
         self.login('test2@mail.com','python')
         response = self.app.get('/company/1/create_job/',follow_redirects=True)
+        print response.data
         self.assertEqual(response.status_code,403)
