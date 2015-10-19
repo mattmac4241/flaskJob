@@ -71,15 +71,14 @@ def apply_to_job(jobs_id):
 
 @jobs_blueprint.route('/jobs/<int:jobs_id>/delete/')
 @login_required
-def delete_company(company_id):
-    company = Company.query.get(company_id)
+def delete_job(jobs_id):
+    job = Job.query.get(jobs_id)
+    company = Company.query.get(job.company_id)
     if session['user_id'] == company.user_id:
-        for job in comapny.jobs_posted:
-            job.delete()
-        company.delete()
+        Job.query.filter_by(id=jobs_id).delete()
         db.session.commit()
-        flash('The company was deleted')
-        return redirect(url_for('users.profile'))
+        flash('The job was deleted')
+        return redirect(url_for('companies.company_profile',company_id=company.id))
     else:
-        flash("You don't have permission for that")
-        return redirect(url_for('companies.company_profile',company_id=company_id))
+        flash("You do not have permission for that")
+        return redirect(url_for('jobs.jobs_profile',jobs_id=jobs_id,company_id=company.id))

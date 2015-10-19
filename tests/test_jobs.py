@@ -155,3 +155,22 @@ class ComapnyTest(unittest.TestCase):
         self.app.get('/company/1/jobs/1',follow_redirects=True)
         response = self.app.get('/jobs/1/apply_to/',follow_redirects=True)
         self.assertIn('You have already applied to this job',response.data)
+
+    def test_delete_job_if_owner(self):
+        self.register('Matt','McCabe','test@mail.com','python','python')
+        self.login('test@mail.com','python')
+        self.register_company('Weyland','mining company','www.test.com')
+        self.post_job('miner','you will work the mines',50000,60453,'Fulle-Time',1)
+        response = self.app.get('/jobs/1/delete/',follow_redirects=True)
+        self.assertIn(b'The job was deleted',response.data)
+
+    def test_fail_to_delete_job_not_owner(self):
+        self.register('Matt','McCabe','test@mail.com','python','python')
+        self.login('test@mail.com','python')
+        self.register_company('Weyland','mining company','www.test.com')
+        self.post_job('miner','you will work the mines',50000,60453,'Fulle-Time',1)
+        self.logout()
+        self.register('Matt','McCabe','test2@mail.com','python','python')
+        self.login('test2@mail.com','python')
+        response = self.app.get('/jobs/1/delete/',follow_redirects=True)
+        self.assertIn(b'You do not have permission for that',response.data)
