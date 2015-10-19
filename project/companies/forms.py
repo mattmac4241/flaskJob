@@ -14,5 +14,5 @@ class CreateCompanyForm(Form):
     )
     website = StringField(
         'Website',
-        validators=[Length(min=6,max=40)]
+        validators=[Length(min=0,max=40)]
     )

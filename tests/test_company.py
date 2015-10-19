@@ -101,4 +101,23 @@ class ComapnyTest(unittest.TestCase):
         self.register('Matt','McCabe','test@mail.com','python','python')
         self.login('test@mail.com','python')
         response = self.register_company('Weyland','mining company','')
-        self.assertIn(b'Weyland',response.data)
+        self.assertIn(b'Thanks for registering your company',response.data)
+
+    def test_delete_company_if_owner(self):
+        self.register('Matt','McCabe','test@mail.com','python','python')
+        self.login('test@mail.com','python')
+        self.register_company('Weyland','mining company','www.test.com')
+        self.app.get('/company/1/')
+        response = self.app.get('/company/1/delete/',follow_redirects=True)
+        self.assertIn(b'The company was deleted',response.data)
+
+    def test_fail_to_delete_company_not_owner(self):
+        self.register('Matt','McCabe','test@mail.com','python','python')
+        self.login('test@mail.com','python')
+        self.register_company('Weyland','mining company','www.test.com')
+        self.logout()
+        self.register('Matt','McCabe','test2@mail.com','python','python')
+        self.login('test2@mail.com','python')
+        self.app.get('/company/1/')
+        response = self.app.get('/company/1/delete/',follow_redirects=True)
+        self.assertIn(b'You do not have permission for that',response.data)

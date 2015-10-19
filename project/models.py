@@ -11,7 +11,10 @@ company_table = db.Table('company_table',
     db.Column('jobs_id', db.Integer, db.ForeignKey('jobs.id')),
     db.Column('company_id', db.Integer, db.ForeignKey('companies.id'))
 )
-
+user_table = db.Table('usern_table',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('company_id', db.Integer, db.ForeignKey('companies.id'))
+)
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -21,8 +24,9 @@ class User(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     role = db.Column(db.String,default="user")
-    #applied_to = db.relationship('Job') #Jobs the user applied_to
     applied_to = db.relationship('Job',secondary=association_table,backref=db.backref('jobs', lazy='dynamic'))
+    companies = db.relationship('Company',secondary=user_table,backref=db.backref('companies', lazy='dynamic'))
+
     def __init__(self, name=None, email=None, password=None, role=None):
         self.name = name
         self.email = email

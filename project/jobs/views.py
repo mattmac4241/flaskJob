@@ -53,14 +53,14 @@ def jobs_profile(jobs_id,company_id):
     job = Job.query.get(jobs_id)
     return render_template('job.html',job=job)
 
-@jobs_blueprint.route('/apply_to/<int:jobs_id>/')
+@jobs_blueprint.route('/jobs/<int:jobs_id>/apply_to/')
 @login_required
-def apply_to_job(jobs_id,company_id):
+def apply_to_job(jobs_id):
     job = Job.query.get(jobs_id)
     user = User.query.get(session['user_id'])
     if job in user.applied_to:
         flash("You have already applied to this job")
-    elif company.id == job.company_id:
+    elif job.company_id in user.companies:
         flash("You can't apply to jobs you post")
     else:
         user.applied_to.append(job)
@@ -68,3 +68,18 @@ def apply_to_job(jobs_id,company_id):
         db.session.commit()
         flash('You successfully applied to the job. Good Luck!')
     return redirect(url_for('jobs.jobs_profile',jobs_id=jobs_id,company_id=job.company_id))
+
+@jobs_blueprint.route('/jobs/<int:jobs_id>/delete/')
+@login_required
+def delete_company(company_id):
+    company = Company.query.get(company_id)
+    if session['user_id'] == company.user_id:
+        for job in comapny.jobs_posted:
+            job.delete()
+        company.delete()
+        db.session.commit()
+        flash('The company was deleted')
+        return redirect(url_for('users.profile'))
+    else:
+        flash("You don't have permission for that")
+        return redirect(url_for('companies.company_profile',company_id=company_id))
