@@ -1,6 +1,6 @@
 from flask_wtf import Form
-from wtforms import StringField, IntegerField
-from wtforms.validators import DataRequired,Length
+from wtforms import StringField, IntegerField, SelectField
+from wtforms.validators import DataRequired,Length,optional
 
 #form for those seeking a job
 class CreateJobForm(Form):
@@ -18,9 +18,13 @@ class CreateJobForm(Form):
     )
     zip_code = StringField(
         'Zip Code',
-        validators=[])
+        validators=[Length(min=5,max=5)])
 
-    job_type = StringField(
-        'Job Type',
-        validators=[Length(min=5,max=20)]
-    )
+    job_type = SelectField(
+                'Job Type',
+                choices=[(1, 'Full-Time'),
+                         (2, 'Part-Time'),
+                         (3, 'Contract'),
+                         (4, 'Internship')],
+                coerce=int,
+                validators=[optional()])

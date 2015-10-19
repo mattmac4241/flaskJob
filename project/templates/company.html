@@ -7,7 +7,8 @@
 </div>
 <div>
   {% for job in company.jobs_posted %}
-    <h2>{{job.title}}</h2>
+  <a href="{{ url_for('jobs.jobs_profile',company_id = company.id, jobs_id = job.id)}}">{{job.title}}</a>
+  <br>
   {%endfor%}
 </div>
 {%endblock%}

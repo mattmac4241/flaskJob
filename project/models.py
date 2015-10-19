@@ -11,7 +11,7 @@ company_table = db.Table('company_table',
     db.Column('jobs_id', db.Integer, db.ForeignKey('jobs.id')),
     db.Column('company_id', db.Integer, db.ForeignKey('companies.id'))
 )
-user_table = db.Table('usern_table',
+user_table = db.Table('user_table',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
     db.Column('company_id', db.Integer, db.ForeignKey('companies.id'))
 )
