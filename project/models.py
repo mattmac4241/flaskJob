@@ -26,12 +26,14 @@ class User(db.Model):
     role = db.Column(db.String,default="user")
     applied_to = db.relationship('Job',secondary=association_table,backref=db.backref('jobs', lazy='dynamic'))
     companies = db.relationship('Company',secondary=user_table,backref=db.backref('companies', lazy='dynamic'))
+    profile_picture = db.Column(db.String,default="static/files/users/default/default_profile.png")
 
-    def __init__(self, name=None, email=None, password=None, role=None):
+    def __init__(self, name=None, email=None, password=None, role=None,profile_picture=None):
         self.name = name
         self.email = email
         self.password = password
         self.role = role
+        self.profile_picture = profile_picture
 
     def __repr__(self):
         return '<User {0}>'.format(self.name)
@@ -45,6 +47,7 @@ class Company(db.Model):
     website = db.Column(db.String,default='')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     jobs_posted = db.relationship('Job',secondary=company_table)
+    profile_picture = db.Column(db.String,default='static/files/users/default/default_profile.png')
 
     def __init__(self,name=None,info=None,website=None,user_id=None):
         self.name = name

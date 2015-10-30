@@ -3,7 +3,7 @@
 
 <h1>Welcome to Steve.</h1>
 <h3>Please register to access the task list.</h3>
-<form method="POST" action="/register/">
+<form method="POST" action="/register/" enctype="multipart/form-data">
   {{ form.csrf_token }}
   <p>
     {{ form.first_name(placeholder="first_name") }}
@@ -36,6 +36,17 @@
     {% endif %}
   </p>
   <p>
+    <p>
+      Profile Picture: {{ form.image(placeholder="profile picture") }}
+      {% if form.image.errors %}
+        <span class="error">
+          {% for error in form.image.errors %}
+            {{ error }}
+          {% endfor %}
+        </span>
+      {% endif %}
+    </p>
+    <p>
     {{ form.password(placeholder="password") }}
     {% if form.password.errors %}
       <span class="error">

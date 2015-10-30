@@ -1,10 +1,11 @@
 from functools import wraps
 from flask import flash, redirect, render_template,request, session, url_for, Blueprint
 from sqlalchemy.exc import IntegrityError
-
 from .forms import RegisterForm, LoginForm
-from project import db, bcrypt
+from project import db, bcrypt,app
 from project.models import User
+from werkzeug import secure_filename
+import os
 
 users_blueprint = Blueprint('users', __name__)
 
@@ -18,6 +19,18 @@ def login_required(test):
             flash('You need to login first.')
             return redirect(url_for('users.login'))
     return wrap
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+def file_upload(name,file):
+    path = app.config['UPLOAD_FOLDER']
+    file_path = os.path.join("%s/%s" % (path,name))
+    if not os.path.exists(file_path): #check if folder exists, if it doesn't creat it
+        os.makedirs(file_path)
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], "%s/%s" % (name,filename)))
 
 @users_blueprint.route('/')
 def index():
@@ -57,17 +70,32 @@ def logout():
     flash("Goodbye!")
     return redirect(url_for('users.login'))
 
+
 @users_blueprint.route('/register/',methods=['GET','POST'])
 def register():
     error = None
     form = RegisterForm(request.form)
     if request.method == 'POST':
         if form.validate_on_submit():
-            new_user = User(
-                name=form.first_name.data + ' ' + form.last_name.data,
-                email=form.email.data,
-                password=bcrypt.generate_password_hash(form.password.data)
-            )
+            image = form.image
+            if image != None:
+                path = app.config['UPLOAD_FOLDER']
+                name = form.email.data
+                os.makedirs(os.path.join("%s/%s" % (path,name)))
+                file = request.files['image']
+                file_upload(form.email.data,file)
+                new_user = User(
+                        name=form.first_name.data + ' ' + form.last_name.data,
+                        email=form.email.data,
+                        password=bcrypt.generate_password_hash(form.password.data),
+                        profile_picture = file.filename
+                )
+            elif image == None:
+                new_user = User(
+                    name=form.first_name.data + ' ' + form.last_name.data,
+                    email=form.email.data,
+                    password=bcrypt.generate_password_hash(form.password.data)
+                )
             try:
                 db.session.add(new_user)
                 db.session.commit()
@@ -83,4 +111,5 @@ def register():
 @login_required
 def user_profile(user_id):
     user = User.query.get(user_id)
+    print "PICTURE " + user.profile_picture
     return render_template('user.html',user=user)
