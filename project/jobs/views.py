@@ -51,7 +51,8 @@ def create_job(company_id):
 @login_required
 def jobs_profile(jobs_id,company_id):
     job = Job.query.get(jobs_id)
-    return render_template('job.html',job=job)
+    apply_url = '/jobs/%s/apply_to/' % job.id
+    return render_template('job.html',job=job,apply_url=apply_url)
 
 @jobs_blueprint.route('/jobs/<int:jobs_id>/apply_to/')
 @login_required

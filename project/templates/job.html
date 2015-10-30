@@ -2,4 +2,10 @@
 
 {%block content%}
 <h1> JOB: {{job.name}} </h1>
+{%for a in job.applicants%}
+  <h2>{{a.name}}</h2>
+{%endfor%}
+<form action="{{apply_url}}">
+    <input type="submit" value="Apply">
+</form>
 {%endblock%}

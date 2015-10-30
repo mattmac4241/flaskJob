@@ -31,6 +31,7 @@ def file_upload(name,file):
         os.makedirs(file_path)
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], "%s/%s" % (name,filename)))
+    return "%s/%s" % (name,filename)
 
 @users_blueprint.route('/')
 def index():
@@ -79,16 +80,14 @@ def register():
         if form.validate_on_submit():
             image = form.image
             if image != None:
-                path = app.config['UPLOAD_FOLDER']
-                name = form.email.data
-                os.makedirs(os.path.join("%s/%s" % (path,name)))
                 file = request.files['image']
-                file_upload(form.email.data,file)
+                p = file_upload(form.email.data,file)
+                pa = "/static/files/users/%s" % p
                 new_user = User(
                         name=form.first_name.data + ' ' + form.last_name.data,
                         email=form.email.data,
                         password=bcrypt.generate_password_hash(form.password.data),
-                        profile_picture = file.filename
+                        profile_picture = pa
                 )
             elif image == None:
                 new_user = User(
@@ -105,7 +104,6 @@ def register():
                 error = "That username and/or email alread exists."
                 return render_template('register.html',form=form,error=error)
     return render_template('register.html',form=form)
-
 
 @users_blueprint.route('/user/<int:user_id>/')
 @login_required
