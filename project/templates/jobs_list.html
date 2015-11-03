@@ -1,0 +1,17 @@
+{%extends "_base.html"%}
+
+{%block content%}
+<h1>Jobs Search</h1>
+<br>
+<div class="col-lg-6">
+  <form method="POST"  action="/search/jobs/" method="POST">
+    <div class="input-group">
+      <input type="text" name="search" class="form-control" placeholder="Search for...">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="submit">Go!</button>
+      </span>
+    </form>
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+{%endblock%}

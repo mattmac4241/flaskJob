@@ -53,8 +53,7 @@ def company_profile(company_id):
 @login_required
 def company_jobs(company_id):
     company = Company.query.get(company_id)
-    return render_template('list.html',company=company)
-
+    return render_template('company_jobs_list.html',company=company)
 
 @companies_blueprint.route('/company/<int:company_id>/delete/')
 @login_required

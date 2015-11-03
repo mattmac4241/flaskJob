@@ -14,7 +14,7 @@ DEBUG = True
 DATABASE_PATH = os.path.join(basedir, DATABASE)
 
 # the database uri
-SQLALCHEMY_DATABASE_URI = 'sqlite:////' + DATABASE_PATH
+SQLALCHEMY_DATABASE_URI = "postgresql://matt:Password@localhost/jobs"
 
 ALLOWED_EXTENSIONS = set(['jpg','png'])
 UPLOAD_FOLDER = '%s/static/files/users/' % basedir
