@@ -19,16 +19,13 @@ def login_required(test):
 
 #search for jobs
 def jobs_search(term):
-    print Job.query.all()
-    print term
     results = Job.query.search(term).all()
     return results
 
 #search for companies
 def companies_search(term):
-    query = session.query(Comapny)
-    query = search(query, term)
-    return query
+    results = Company.query.search(term).all()
+    return results
 
 @search_blueprint.route('/search/jobs/', methods=['GET','POST'])
 @login_required
@@ -37,6 +34,14 @@ def jobs():
         term = request.form['search']
         jobs = jobs_search(term)
         info = [(x,Company.query.get(x.company_id),str(x.date_added).split(' ')[0]) for x in jobs]
-        print "THESE ARE RESULTS %s" % jobs
         return render_template('jobs_list.html',info=info)
     return render_template('jobs_list.html')
+
+@search_blueprint.route('/search/companies/',methods=['GET','POST'])
+@login_required
+def companies():
+    if request.method == 'POST':
+        term = request.form['search']
+        companies = companies_search(term)
+        return render_template('companies_list.html',companies=companies)
+    return render_template('companies_list.html')
