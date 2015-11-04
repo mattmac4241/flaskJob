@@ -4,9 +4,6 @@ from flask import flash, redirect, render_template,request, session, url_for, Bl
 from project.models import Job,Company
 from sqlalchemy_searchable import search
 
-
-
-
 search_blueprint = Blueprint('search', __name__)
 
 #Helper functions
@@ -38,7 +35,8 @@ def companies_search(term):
 def jobs():
     if request.method == 'POST':
         term = request.form['search']
-        results = jobs_search(term)
-        print "THESE ARE RESULTS %s" % results
-        return render_template('jobs_list.html',results=results)
+        jobs = jobs_search(term)
+        info = [(x,Company.query.get(x.company_id),str(x.date_added).split(' ')[0]) for x in jobs]
+        print "THESE ARE RESULTS %s" % jobs
+        return render_template('jobs_list.html',info=info)
     return render_template('jobs_list.html')

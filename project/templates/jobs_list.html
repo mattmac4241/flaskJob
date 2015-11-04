@@ -1,17 +1,51 @@
 {%extends "_base.html"%}
 
 {%block content%}
-<h1>Jobs Search</h1>
-<br>
-<div class="col-lg-6">
-  <form method="POST"  action="/search/jobs/" method="POST">
-    <div class="input-group">
-      <input type="text" name="search" class="form-control" placeholder="Search for...">
-      <span class="input-group-btn">
-        <button class="btn btn-default" type="submit">Go!</button>
-      </span>
-    </form>
-    </div><!-- /input-group -->
-  </div><!-- /.col-lg-6 -->
-</div><!-- /.row -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="page-header">
+                <h1>Job Search</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <form method="POST"  action="/search/jobs/" method="POST">
+          <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search for...">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="submit">Go!</button>
+            </span>
+          </form>
+        </div><!-- /input-group -->
+      </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table" id="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Company</th>
+                        <th>Date Posted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for job,company,time in info %}
+                    <tr>
+                        <td><a href="{{url_for('jobs.jobs_profile',company_id=company.id,jobs_id=job.id)}}">{{job.title}}</a></td>
+                        <td><a href="{{url_for('companies.company_profile',company_id=company.id)}}">{{company.name}}</a></td>
+                        <td>{{time}}</td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+            <hr>
+        </div>
+    </div>
+<script src="//rawgithub.com/stidges/jquery-searchable/master/dist/jquery.searchable-1.0.0.min.js"></script>
 {%endblock%}

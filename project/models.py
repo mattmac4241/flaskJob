@@ -81,6 +81,7 @@ class Job(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String,nullable=False)
     description = db.Column(db.String,default='')
+    date_added = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     salary = db.Column(db.Integer)
     zip_code = db.Column(db.String)
     job_type = db.Column(db.String,default='') #reprsents Fulltime,partime,contract,internship,commission
