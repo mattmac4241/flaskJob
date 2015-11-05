@@ -62,11 +62,12 @@ class Company(db.Model):
     profile_picture = db.Column(db.String,default='static/files/users/default/default_profile.png')
     search_vector = db.Column(TSVectorType('name', 'info'))
 
-    def __init__(self,name=None,info=None,website=None,user_id=None):
+    def __init__(self,name=None,info=None,website=None,user_id=None,profile_picture=None):
         self.name = name
         self.info = info
         self.website = website
         self.user_id = user_id
+        self.profile_picture = profile_picture
 
     def __repr__(self):
         return '<Comapny {0}>'.format(self.name)

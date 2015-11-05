@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import StringField
+from wtforms import StringField,FileField
 from wtforms.validators import DataRequired,Length,EqualTo,Email
 
 #form for those seeking a job
@@ -16,3 +16,7 @@ class CreateCompanyForm(Form):
         'Website',
         validators=[Length(min=0,max=40)]
     )
+
+    image = FileField(
+        'Image File',
+        )

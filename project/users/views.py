@@ -30,7 +30,7 @@ def file_upload(name,file):
     if not os.path.exists(file_path): #check if folder exists, if it doesn't creat it
         os.makedirs(file_path)
     filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], "%s/%s" % (name,filename)))
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], "%s/%s" % (name,"profile_picture.jpg")))
     return "%s/%s" % (name,filename)
 
 @users_blueprint.route('/')

@@ -2,8 +2,10 @@ from functools import wraps
 from flask import flash, redirect, render_template,request, session, url_for, Blueprint
 
 from .forms import CreateCompanyForm
-from project import db, bcrypt
+from project import db, bcrypt,app
 from project.models import Company,User,Job
+
+import os
 
 companies_blueprint = Blueprint('companies', __name__)
 
@@ -18,8 +20,14 @@ def login_required(test):
             return redirect(url_for('users.login'))
     return wrap
 
-def get_jobs(company_id):
-    return
+def file_upload(name,file,company_name):
+    path = app.config['UPLOAD_FOLDER']
+    file_path = os.path.join("%s/%s" % (path,name))
+    if not os.path.exists(file_path): #check if folder exists, if it doesn't creat it
+        os.makedirs(file_path)
+    filename = "%s_profile_picture.jpg" % (company_name.replace(' ','_'))
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], "%s/%s" % (name,filename)))
+    return "%s/%s" % (name,filename)
 
 
 @companies_blueprint.route('/create_company/',methods=['GET','POST'])
@@ -30,16 +38,37 @@ def create_company():
     form = CreateCompanyForm(request.form)
     if request.method == 'POST':
         if form.validate_on_submit():
-            new_company = Company(
-                name = form.name.data,
-                info = form.info.data,
-                website = form.website.data,
-                user_id = session['user_id']
-            )
-            user.companies.append(new_company)
-            db.session.add(new_company)
-            db.session.commit()
-            flash("Thanks for registering your company")
+            print "HERE"
+            image = form.image
+            if image != None:
+                file = request.files['image']
+                p = file_upload(user.email,file,form.name.data)
+                pa = "/static/files/users/%s" % p
+                print pa
+                new_company = Company(
+                    name = form.name.data,
+                    info = form.info.data,
+                    website = form.website.data,
+                    user_id = session['user_id'],
+                    profile_picture = pa
+                )
+            else:
+                new_company = Company(
+                    name = form.name.data,
+                    info = form.info.data,
+                    website = form.website.data,
+                    user_id = session['user_id']
+                )
+            try:
+                print "HERE"
+                user.companies.append(new_company)
+                db.session.add(new_company)
+                db.session.commit()
+                flash("Thanks for registering your company")
+
+            except IntegrityError:
+                pass
+
             return redirect(url_for('companies.company_profile',company_id=new_company.id))
     return render_template('create_company.html',form=form)
 

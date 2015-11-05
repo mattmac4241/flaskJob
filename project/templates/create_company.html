@@ -2,7 +2,7 @@
 {% block content %}
 
 <h3>Create Your Company Profile.</h3>
-<form method="POST" action="/create_company/">
+<form method="POST" action="/create_company/" enctype="multipart/form-data">
   {{ form.csrf_token }}
   <p>
     {{ form.name(placeholder="Company Name") }}
@@ -29,6 +29,16 @@
     {% if form.website.errors %}
       <span class="error">
         {% for error in form.website.errors %}
+          {{ error }}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+  <p>
+    {{ form.image(placeholder="company_picture") }}
+    {% if form.image.errors %}
+      <span class="error">
+        {% for error in form.image.errors %}
           {{ error }}
         {% endfor %}
       </span>
